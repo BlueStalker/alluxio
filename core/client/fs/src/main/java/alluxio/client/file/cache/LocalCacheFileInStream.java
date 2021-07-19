@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -140,7 +141,8 @@ public class LocalCacheFileInStream extends FileInStream {
       PageId pageId;
       CacheContext cacheContext = mStatus.getCacheContext();
       if (cacheContext != null && cacheContext.getCacheIdentifier() != null) {
-        pageId = new PageId(cacheContext.getCacheIdentifier(), currentPage);
+        pageId = new PageId(cacheContext.getCacheIdentifier(), currentPage,
+            Optional.of(cacheContext));
       } else {
         pageId = new PageId(Long.toString(mStatus.getFileId()), currentPage);
       }

@@ -123,6 +123,10 @@ public class CacheManagerWithShadowCache implements CacheManager {
       mWorkingSetBloomFilter.put(pageId);
       updateFalsePositiveRatio();
       updateWorkingSetSize();
+      pageId.getCacheContext().ifPresent(
+          cacheContext -> cacheContext
+              .incrementCounter(MetricKey.CLIENT_CACHE_SHADOW_CACHE_BYTES.getName(), pageLength)
+      );
     }
   }
 

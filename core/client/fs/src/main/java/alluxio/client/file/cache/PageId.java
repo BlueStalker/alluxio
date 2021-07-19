@@ -11,10 +11,13 @@
 
 package alluxio.client.file.cache;
 
+import alluxio.client.file.CacheContext;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.Optional;
 
 /**
  * A class identifies a single cached page.
@@ -23,14 +26,25 @@ import javax.annotation.concurrent.ThreadSafe;
 public class PageId {
   private final String mFileId;
   private final long mPageIndex;
+  private final Optional<CacheContext> mCacheContext;
 
   /**
    * @param fileId file Id
    * @param pageIndex index of the page in file
    */
   public PageId(String fileId, long pageIndex) {
+    this(fileId, pageIndex, Optional.empty());
+  }
+
+  /**
+   * @param fileId file Id
+   * @param pageIndex index of the page in file
+   * @param cacheContext cache context of the page
+   */
+  public PageId(String fileId, long pageIndex, Optional<CacheContext> cacheContext) {
     mFileId = fileId;
     mPageIndex = pageIndex;
+    mCacheContext = cacheContext;
   }
 
   /**
@@ -47,9 +61,16 @@ public class PageId {
     return mPageIndex;
   }
 
+  /**
+   * @return cache context of the page
+   */
+  public Optional<CacheContext> getCacheContext() {
+    return mCacheContext;
+  }
+
   @Override
   public int hashCode() {
-    return Objects.hashCode(mFileId, mPageIndex);
+    return Objects.hashCode(mFileId, mPageIndex, mCacheContext);
   }
 
   @Override
@@ -61,7 +82,9 @@ public class PageId {
       return false;
     }
     PageId that = (PageId) obj;
-    return mFileId.equals(that.mFileId) && mPageIndex == that.mPageIndex;
+    return mFileId.equals(that.mFileId)
+        && mPageIndex == that.mPageIndex
+        && mCacheContext.equals(that.mCacheContext);
   }
 
   @Override
@@ -69,6 +92,7 @@ public class PageId {
     return MoreObjects.toStringHelper(this)
         .add("FileId", mFileId)
         .add("PageIndex", mPageIndex)
+        .add("CacheContext", mCacheContext)
         .toString();
   }
 }
